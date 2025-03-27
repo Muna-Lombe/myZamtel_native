@@ -1,0 +1,255 @@
+"use client"
+import { useState } from "react"
+import { ArrowLeft, ChevronDown, ChevronUp, HelpCircle, MessageCircle, Phone } from "lucide-react"
+import { BottomNavigation } from "@/components/ui/bottom-navigation"
+
+interface HelpScreenProps {
+  onNavigate: (screen: string) => void
+  onBack?: () => void
+}
+
+interface FAQ {
+  id: string
+  question: string
+  answer: string
+  category: string
+}
+
+export default function HelpScreen({ onNavigate, onBack }: HelpScreenProps) {
+  const [expandedFAQ, setExpandedFAQ] = useState<string | null>(null)
+  const [activeCategory, setActiveCategory] = useState<string>("general")
+
+  const faqs: FAQ[] = [
+    {
+      id: "faq1",
+      question: "How do I send money to another Zamtel Money user?",
+      answer:
+        "To send money to another Zamtel Money user, go to the 'Send Money' option from the dashboard, enter the recipient's phone number, enter the amount, confirm the details, and enter your PIN to complete the transaction.",
+      category: "general",
+    },
+    {
+      id: "faq2",
+      question: "What are the transaction limits?",
+      answer:
+        "The daily transaction limit is K10,000. The minimum amount for sending money is K5, and the maximum is K5,000 per transaction.",
+      category: "general",
+    },
+    {
+      id: "faq3",
+      question: "How do I cash out money from my account?",
+      answer:
+        "To cash out, select 'Cash Out' from the dashboard, enter the agent code, specify the amount, confirm the details, and enter your PIN to complete the transaction.",
+      category: "general",
+    },
+    {
+      id: "faq4",
+      question: "What should I do if my transaction fails?",
+      answer:
+        "If your transaction fails, check your balance and network connection. If the issue persists, contact our customer support at 100 from your Zamtel line or visit the nearest Zamtel shop.",
+      category: "transactions",
+    },
+    {
+      id: "faq5",
+      question: "How do I change my PIN?",
+      answer:
+        "To change your PIN, go to your Profile, select Security Settings, choose 'Change PIN', enter your current PIN, then enter and confirm your new PIN.",
+      category: "security",
+    },
+    {
+      id: "faq6",
+      question: "What fees are charged for transactions?",
+      answer:
+        "Fees vary depending on the transaction type and amount. You can view the fee structure in the app under 'Fees & Charges' in the Support section.",
+      category: "transactions",
+    },
+    {
+      id: "faq7",
+      question: "How do I recover my account if I lose my phone?",
+      answer:
+        "If you lose your phone, call our customer support immediately at 100 from any Zamtel line to block your account. Visit a Zamtel shop with your ID to recover your account.",
+      category: "security",
+    },
+    {
+      id: "faq8",
+      question: "Can I use Zamtel Money internationally?",
+      answer:
+        "Yes, you can send money internationally through our International Money Transfer service. Select 'International Transfer' from the dashboard to get started.",
+      category: "general",
+    },
+  ]
+
+  const categories = [
+    { id: "general", label: "General" },
+    { id: "transactions", label: "Transactions" },
+    { id: "security", label: "Security" },
+  ]
+
+  const filteredFAQs = faqs.filter((faq) => faq.category === activeCategory)
+
+  const toggleFAQ = (faqId: string) => {
+    if (expandedFAQ === faqId) {
+      setExpandedFAQ(null)
+    } else {
+      setExpandedFAQ(faqId)
+    }
+  }
+
+  return (
+    <div className="flex flex-col h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-primary text-white p-4 flex items-center">
+        <button onClick={onBack} className="mr-2">
+          <ArrowLeft size={24} />
+        </button>
+        <h1 className="text-xl font-semibold">Help & FAQs</h1>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto no-scrollbar">
+        <div className="p-4">
+          {/* Contact Support Section */}
+          <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+            <h2 className="text-lg font-semibold mb-3 flex items-center">
+              <HelpCircle size={20} className="text-primary mr-2" />
+              Need Help?
+            </h2>
+            <p className="text-sm text-gray-600 mb-4">Can't find what you're looking for? Contact our support team.</p>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                className="flex items-center justify-center p-3 bg-primary/10 text-primary rounded-lg"
+                onClick={() => onNavigate("support")}
+              >
+                <MessageCircle size={18} className="mr-2" />
+                <span className="text-sm font-medium">Chat Support</span>
+              </button>
+              <button
+                className="flex items-center justify-center p-3 bg-primary/10 text-primary rounded-lg"
+                onClick={() => {
+                  // Handle call support
+                }}
+              >
+                <Phone size={18} className="mr-2" />
+                <span className="text-sm font-medium">Call 100</span>
+              </button>
+            </div>
+          </div>
+
+          {/* FAQ Categories */}
+          <div className="mb-4 flex space-x-2 overflow-x-auto no-scrollbar pb-2">
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${
+                  activeCategory === category.id
+                    ? "bg-primary text-white"
+                    : "bg-white text-gray-700 border border-gray-200"
+                }`}
+                onClick={() => setActiveCategory(category.id)}
+              >
+                {category.label}
+              </button>
+            ))}
+          </div>
+
+          {/* FAQs */}
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <h2 className="p-4 border-b border-gray-100 font-semibold">Frequently Asked Questions</h2>
+
+            {filteredFAQs.length === 0 ? (
+              <p className="p-4 text-center text-gray-500">No FAQs found in this category</p>
+            ) : (
+              <div className="divide-y divide-gray-100">
+                {filteredFAQs.map((faq) => (
+                  <div key={faq.id} className="overflow-hidden">
+                    <button
+                      className="w-full p-4 text-left flex justify-between items-center"
+                      onClick={() => toggleFAQ(faq.id)}
+                    >
+                      <span className="font-medium">{faq.question}</span>
+                      {expandedFAQ === faq.id ? (
+                        <ChevronUp size={18} className="text-gray-500" />
+                      ) : (
+                        <ChevronDown size={18} className="text-gray-500" />
+                      )}
+                    </button>
+
+                    {expandedFAQ === faq.id && (
+                      <div className="p-4 pt-0 bg-gray-50 animate-in fade-in duration-200">
+                        <p className="text-gray-600">{faq.answer}</p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Navigation */}
+      <BottomNavigation>
+        <div className="flex flex-col items-center" onClick={() => onNavigate("home")}>
+          <div className="bg-gray-100 rounded-full p-1">
+            <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+              />
+            </svg>
+          </div>
+          <span className="text-xs text-gray-500 mt-1">Home</span>
+        </div>
+        <div className="flex flex-col items-center" onClick={() => onNavigate("dashboard")}>
+          <div className="bg-gray-100 rounded-full p-1">
+            <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+          <span className="text-xs text-gray-500 mt-1">Money</span>
+        </div>
+        <div className="flex flex-col items-center" onClick={() => onNavigate("services")}>
+          <div className="bg-gray-100 rounded-full p-1">
+            <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </div>
+          <span className="text-xs text-gray-500 mt-1">Services</span>
+        </div>
+        <div className="flex flex-col items-center" onClick={() => onNavigate("shop")}>
+          <div className="bg-gray-100 rounded-full p-1">
+            <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+              />
+            </svg>
+          </div>
+          <span className="text-xs text-gray-500 mt-1">Shop</span>
+        </div>
+        <div className="flex flex-col items-center" onClick={() => onNavigate("help")}>
+          <div className="bg-emerald-500 rounded-full p-1">
+            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+          <span className="text-xs text-emerald-500 font-medium mt-1">Help</span>
+        </div>
+      </BottomNavigation>
+    </div>
+  )
+}
+

@@ -1,0 +1,355 @@
+"use client"
+import { useState } from "react"
+import { ArrowLeft, Calendar, ChevronDown, Filter, Search } from "lucide-react"
+import { BottomNavigation } from "@/components/ui/bottom-navigation"
+
+interface Transaction {
+  id: string
+  type: string
+  amount: string
+  recipient: string
+  date: string
+  status: "completed" | "pending" | "failed"
+}
+
+interface TransactionHistoryScreenProps {
+  onNavigate: (screen: string) => void
+  onBack?: () => void
+}
+
+export default function TransactionHistoryScreen({ onNavigate, onBack }: TransactionHistoryScreenProps) {
+  const [activeFilter, setActiveFilter] = useState("all")
+  const [showFilters, setShowFilters] = useState(false)
+  const [dateRange, setDateRange] = useState({ from: "", to: "" })
+  const [showDatePicker, setShowDatePicker] = useState(false)
+
+  const transactions: Transaction[] = [
+    {
+      id: "TX123456",
+      type: "Send Money",
+      amount: "K250.00",
+      recipient: "John Doe",
+      date: "Today, 10:30 AM",
+      status: "completed",
+    },
+    {
+      id: "TX123455",
+      type: "Cash Out",
+      amount: "K500.00",
+      recipient: "ATM Withdrawal",
+      date: "Yesterday, 2:15 PM",
+      status: "completed",
+    },
+    {
+      id: "TX123454",
+      type: "Bill Payment",
+      amount: "K120.00",
+      recipient: "ZESCO",
+      date: "Yesterday, 9:45 AM",
+      status: "completed",
+    },
+    {
+      id: "TX123453",
+      type: "Airtime Purchase",
+      amount: "K50.00",
+      recipient: "Self",
+      date: "Mar 15, 2023",
+      status: "completed",
+    },
+    {
+      id: "TX123452",
+      type: "International Transfer",
+      amount: "K1,200.00",
+      recipient: "Sarah Smith",
+      date: "Mar 14, 2023",
+      status: "pending",
+    },
+    {
+      id: "TX123451",
+      type: "Send Money",
+      amount: "K350.00",
+      recipient: "Michael Brown",
+      date: "Mar 12, 2023",
+      status: "failed",
+    },
+    {
+      id: "TX123450",
+      type: "Cash In",
+      amount: "K1,000.00",
+      recipient: "Self",
+      date: "Mar 10, 2023",
+      status: "completed",
+    },
+  ]
+
+  const filteredTransactions = transactions.filter((transaction) => {
+    if (activeFilter === "all") return true
+    if (activeFilter === "send") return transaction.type === "Send Money"
+    if (activeFilter === "cashout") return transaction.type === "Cash Out"
+    if (activeFilter === "bills") return transaction.type === "Bill Payment"
+    if (activeFilter === "airtime") return transaction.type === "Airtime Purchase"
+    return true
+  })
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "completed":
+        return "bg-green-100 text-green-800"
+      case "pending":
+        return "bg-yellow-100 text-yellow-800"
+      case "failed":
+        return "bg-red-100 text-red-800"
+      default:
+        return "bg-gray-100 text-gray-800"
+    }
+  }
+
+  return (
+    <div className="flex flex-col h-screen bg-white">
+      {/* Header */}
+      <div className="bg-primary text-white p-4 flex items-center justify-between">
+        <div className="flex items-center">
+          <button onClick={onBack} className="mr-2">
+            <ArrowLeft size={24} />
+          </button>
+          <h1 className="text-xl font-semibold">Transaction History</h1>
+        </div>
+        <button onClick={() => setShowFilters(!showFilters)} className="p-2 rounded-full bg-white/10">
+          <Filter size={20} className="text-white" />
+        </button>
+      </div>
+
+      {/* Search and Filters */}
+      <div className="p-4 bg-white shadow-sm">
+        <div className="relative">
+          <Search className="absolute left-3 top-2.5 text-gray-400" size={20} />
+          <input
+            type="text"
+            placeholder="Search transactions"
+            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+        </div>
+
+        {showFilters && (
+          <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200 animate-in fade-in duration-200">
+            <h3 className="font-medium mb-3">Filter Transactions</h3>
+
+            <div className="mb-4">
+              <p className="text-sm text-gray-500 mb-2">Transaction Type</p>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setActiveFilter("all")}
+                  className={`px-3 py-1.5 text-sm rounded-full ${activeFilter === "all" ? "bg-primary text-white" : "bg-gray-200 text-gray-700"}`}
+                >
+                  All
+                </button>
+                <button
+                  onClick={() => setActiveFilter("send")}
+                  className={`px-3 py-1.5 text-sm rounded-full ${activeFilter === "send" ? "bg-primary text-white" : "bg-gray-200 text-gray-700"}`}
+                >
+                  Send Money
+                </button>
+                <button
+                  onClick={() => setActiveFilter("cashout")}
+                  className={`px-3 py-1.5 text-sm rounded-full ${activeFilter === "cashout" ? "bg-primary text-white" : "bg-gray-200 text-gray-700"}`}
+                >
+                  Cash Out
+                </button>
+                <button
+                  onClick={() => setActiveFilter("bills")}
+                  className={`px-3 py-1.5 text-sm rounded-full ${activeFilter === "bills" ? "bg-primary text-white" : "bg-gray-200 text-gray-700"}`}
+                >
+                  Bill Payments
+                </button>
+                <button
+                  onClick={() => setActiveFilter("airtime")}
+                  className={`px-3 py-1.5 text-sm rounded-full ${activeFilter === "airtime" ? "bg-primary text-white" : "bg-gray-200 text-gray-700"}`}
+                >
+                  Airtime
+                </button>
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <p className="text-sm text-gray-500 mb-2">Date Range</p>
+              <button
+                onClick={() => setShowDatePicker(!showDatePicker)}
+                className="flex items-center justify-between w-full p-2 bg-white border border-gray-200 rounded-lg"
+              >
+                <div className="flex items-center">
+                  <Calendar size={18} className="text-gray-500 mr-2" />
+                  <span className="text-sm">
+                    {dateRange.from && dateRange.to ? `${dateRange.from} - ${dateRange.to}` : "Select date range"}
+                  </span>
+                </div>
+                <ChevronDown size={18} className="text-gray-500" />
+              </button>
+
+              {showDatePicker && (
+                <div className="mt-2 p-3 bg-white border border-gray-200 rounded-lg shadow-md animate-in fade-in duration-200">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs text-gray-500 mb-1 block">From</label>
+                      <input
+                        type="date"
+                        className="w-full p-2 border border-gray-200 rounded-md text-sm"
+                        value={dateRange.from}
+                        onChange={(e) => setDateRange({ ...dateRange, from: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-500 mb-1 block">To</label>
+                      <input
+                        type="date"
+                        className="w-full p-2 border border-gray-200 rounded-md text-sm"
+                        value={dateRange.to}
+                        onChange={(e) => setDateRange({ ...dateRange, to: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                  <div className="mt-3 flex justify-end">
+                    <button
+                      onClick={() => {
+                        setShowDatePicker(false)
+                        // Here you would apply the date filter
+                      }}
+                      className="px-3 py-1.5 bg-primary text-white text-sm rounded-md"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-between">
+              <button
+                onClick={() => {
+                  setActiveFilter("all")
+                  setDateRange({ from: "", to: "" })
+                }}
+                className="px-3 py-1.5 border border-gray-300 text-gray-700 text-sm rounded-md"
+              >
+                Reset
+              </button>
+              <button
+                onClick={() => setShowFilters(false)}
+                className="px-3 py-1.5 bg-primary text-white text-sm rounded-md"
+              >
+                Apply Filters
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Transaction List */}
+      <div className="flex-1 overflow-y-auto no-scrollbar">
+        <div className="p-4">
+          <h2 className="text-lg font-semibold mb-4">Recent Transactions</h2>
+
+          {filteredTransactions.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-500">No transactions found</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {filteredTransactions.map((transaction) => (
+                <div
+                  key={transaction.id}
+                  className="p-3 bg-white border border-gray-200 rounded-lg shadow-sm flex justify-between items-center"
+                  onClick={() => {
+                    // Navigate to transaction details
+                    // onNavigate("transactionDetail", { id: transaction.id });
+                  }}
+                >
+                  <div>
+                    <div className="flex items-center mb-1">
+                      <span className="font-medium">{transaction.type}</span>
+                      <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${getStatusColor(transaction.status)}`}>
+                        {transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-500">{transaction.recipient}</p>
+                    <p className="text-xs text-gray-400">{transaction.date}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className={`font-semibold ${transaction.type.includes("Cash In") ? "text-green-600" : ""}`}>
+                      {transaction.amount}
+                    </p>
+                    <p className="text-xs text-gray-400">{transaction.id}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Bottom Navigation */}
+      <BottomNavigation>
+        <div className="flex flex-col items-center" onClick={() => onNavigate("home")}>
+          <div className="bg-gray-100 rounded-full p-1">
+            <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+              />
+            </svg>
+          </div>
+          <span className="text-xs text-gray-500 mt-1">Home</span>
+        </div>
+        <div className="flex flex-col items-center" onClick={() => onNavigate("dashboard")}>
+          <div className="bg-emerald-500 rounded-full p-1">
+            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+          <span className="text-xs text-emerald-500 font-medium mt-1">Money</span>
+        </div>
+        <div className="flex flex-col items-center" onClick={() => onNavigate("services")}>
+          <div className="bg-gray-100 rounded-full p-1">
+            <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </div>
+          <span className="text-xs text-gray-500 mt-1">Services</span>
+        </div>
+        <div className="flex flex-col items-center" onClick={() => onNavigate("shop")}>
+          <div className="bg-gray-100 rounded-full p-1">
+            <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+              />
+            </svg>
+          </div>
+          <span className="text-xs text-gray-500 mt-1">Shop</span>
+        </div>
+        <div className="flex flex-col items-center" onClick={() => onNavigate("help")}>
+          <div className="bg-gray-100 rounded-full p-1">
+            <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+          <span className="text-xs text-gray-500 mt-1">Help</span>
+        </div>
+      </BottomNavigation>
+    </div>
+  )
+}
+

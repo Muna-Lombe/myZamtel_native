@@ -1,0 +1,31 @@
+"use client"
+import type React from "react"
+
+interface BottomNavigationProps {
+  children: React.ReactNode
+}
+
+export function BottomNavigation({ children }: BottomNavigationProps) {
+  return (
+    <div className="fixed bottom-0 bg-white border-t border-gray-200 py-2 px-4 w-full max-w-md">
+      <div className="flex justify-between items-center">{children}</div>
+    </div>
+  )
+}
+
+interface BottomNavigationItemProps {
+  icon: React.ReactNode
+  label: string
+  active?: boolean
+  onClick?: () => void
+}
+
+export function BottomNavigationItem({ icon, label, active, onClick }: BottomNavigationItemProps) {
+  return (
+    <div className="flex flex-col items-center cursor-pointer" onClick={onClick}>
+      {icon}
+      <span className={`text-xs ${active ? "text-emerald-500 font-medium" : "text-gray-500"}`}>{label}</span>
+    </div>
+  )
+}
+

@@ -1,0 +1,255 @@
+"use client"
+import { useState } from "react"
+import { ArrowLeft, ChevronDown, ChevronUp, Gift, Tag } from "lucide-react"
+import { BottomNavigation } from "@/components/ui/bottom-navigation"
+
+interface OffersScreenProps {
+  onNavigate: (screen: string) => void
+  onBack?: () => void
+}
+
+interface Offer {
+  id: string
+  title: string
+  description: string
+  expiryDate: string
+  category: string
+  status: "active" | "coming-soon" | "expired"
+  code?: string
+}
+
+export default function OffersScreen({ onNavigate, onBack }: OffersScreenProps) {
+  const [expandedSection, setExpandedSection] = useState<string | null>("promotions")
+
+  const offers: Offer[] = [
+    {
+      id: "offer1",
+      title: "50% Cashback on Bill Payments",
+      description: "Get 50% cashback up to K50 on your first bill payment this month.",
+      expiryDate: "April 30, 2023",
+      category: "promotions",
+      status: "active",
+      code: "BILL50",
+    },
+    {
+      id: "offer2",
+      title: "Free Transfers to Other Networks",
+      description: "Send money to other networks without any fees for the next 7 days.",
+      expiryDate: "April 15, 2023",
+      category: "promotions",
+      status: "active",
+      code: "FREETX",
+    },
+    {
+      id: "offer3",
+      title: "Double Data on Bundles",
+      description: "Purchase any data bundle and get double the amount for the same price.",
+      expiryDate: "April 20, 2023",
+      category: "data",
+      status: "active",
+      code: "DOUBLE",
+    },
+    {
+      id: "offer4",
+      title: "Weekend Special: 10% Off on Airtime",
+      description: "Buy airtime this weekend and get 10% extra on every purchase.",
+      expiryDate: "April 16, 2023",
+      category: "airtime",
+      status: "coming-soon",
+    },
+    {
+      id: "offer5",
+      title: "Refer a Friend, Get K25",
+      description: "Refer a friend to Zamtel Money and both of you get K25 when they sign up.",
+      expiryDate: "May 31, 2023",
+      category: "referrals",
+      status: "active",
+      code: "REFER25",
+    },
+    {
+      id: "offer6",
+      title: "International Transfer Fee Waiver",
+      description: "Send money internationally without any transfer fees.",
+      expiryDate: "March 31, 2023",
+      category: "promotions",
+      status: "expired",
+    },
+  ]
+
+  const categories = [
+    { id: "promotions", label: "Promotions", icon: Gift },
+    { id: "data", label: "Data Offers", icon: Tag },
+    { id: "airtime", label: "Airtime Offers", icon: Tag },
+    { id: "referrals", label: "Referral Rewards", icon: Gift },
+  ]
+
+  const toggleSection = (sectionId: string) => {
+    if (expandedSection === sectionId) {
+      setExpandedSection(null)
+    } else {
+      setExpandedSection(sectionId)
+    }
+  }
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "active":
+        return <span className="px-2 py-0.5 bg-green-100 text-green-800 text-xs rounded-full">Active</span>
+      case "coming-soon":
+        return <span className="px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded-full">Coming Soon</span>
+      case "expired":
+        return <span className="px-2 py-0.5 bg-gray-100 text-gray-800 text-xs rounded-full">Expired</span>
+      default:
+        return null
+    }
+  }
+
+  return (
+    <div className="flex flex-col h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-primary text-white p-4 flex items-center">
+        <button onClick={onBack} className="mr-2">
+          <ArrowLeft size={24} />
+        </button>
+        <h1 className="text-xl font-semibold">Offers & Promotions</h1>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto no-scrollbar">
+        <div className="p-4">
+          <div className="bg-gradient-to-r from-primary to-green-600 text-white p-4 rounded-lg mb-6">
+            <h2 className="text-lg font-semibold mb-1">Special Offers for You</h2>
+            <p className="text-sm opacity-90">Discover exclusive deals and promotions tailored just for you.</p>
+          </div>
+
+          {categories.map((category) => {
+            const categoryOffers = offers.filter((offer) => offer.category === category.id)
+            const isExpanded = expandedSection === category.id
+
+            return (
+              <div key={category.id} className="mb-4 bg-white rounded-lg shadow-sm overflow-hidden">
+                <button
+                  className="w-full p-4 flex items-center justify-between"
+                  onClick={() => toggleSection(category.id)}
+                >
+                  <div className="flex items-center">
+                    <category.icon className="text-primary mr-3" size={20} />
+                    <span className="font-medium">{category.label}</span>
+                    <span className="ml-2 text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">
+                      {categoryOffers.length}
+                    </span>
+                  </div>
+                  {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                </button>
+
+                {isExpanded && (
+                  <div className="p-4 pt-0 border-t border-gray-100 animate-in fade-in duration-200">
+                    {categoryOffers.length === 0 ? (
+                      <p className="text-gray-500 text-center py-4">No offers available</p>
+                    ) : (
+                      <div className="space-y-3">
+                        {categoryOffers.map((offer) => (
+                          <div key={offer.id} className="border border-gray-200 rounded-lg p-3">
+                            <div className="flex justify-between items-start mb-2">
+                              <h3 className="font-medium">{offer.title}</h3>
+                              {getStatusBadge(offer.status)}
+                            </div>
+                            <p className="text-sm text-gray-600 mb-2">{offer.description}</p>
+                            <div className="flex justify-between items-center">
+                              <span className="text-xs text-gray-500">Expires: {offer.expiryDate}</span>
+                              {offer.code && offer.status === "active" && (
+                                <div className="flex items-center">
+                                  <span className="text-xs mr-2">Code:</span>
+                                  <span className="bg-gray-100 px-2 py-1 rounded text-sm font-mono">{offer.code}</span>
+                                </div>
+                              )}
+                            </div>
+                            {offer.status === "active" && (
+                              <button
+                                className="mt-3 w-full py-2 bg-primary text-white rounded-md text-sm font-medium"
+                                onClick={() => {
+                                  // Handle redeeming offer
+                                }}
+                              >
+                                Redeem Offer
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Bottom Navigation */}
+      <BottomNavigation>
+        <div className="flex flex-col items-center" onClick={() => onNavigate("home")}>
+          <div className="bg-gray-100 rounded-full p-1">
+            <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+              />
+            </svg>
+          </div>
+          <span className="text-xs text-gray-500 mt-1">Home</span>
+        </div>
+        <div className="flex flex-col items-center" onClick={() => onNavigate("dashboard")}>
+          <div className="bg-emerald-500 rounded-full p-1">
+            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+          <span className="text-xs text-emerald-500 font-medium mt-1">Money</span>
+        </div>
+        <div className="flex flex-col items-center" onClick={() => onNavigate("services")}>
+          <div className="bg-gray-100 rounded-full p-1">
+            <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </div>
+          <span className="text-xs text-gray-500 mt-1">Services</span>
+        </div>
+        <div className="flex flex-col items-center" onClick={() => onNavigate("shop")}>
+          <div className="bg-gray-100 rounded-full p-1">
+            <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+              />
+            </svg>
+          </div>
+          <span className="text-xs text-gray-500 mt-1">Shop</span>
+        </div>
+        <div className="flex flex-col items-center" onClick={() => onNavigate("help")}>
+          <div className="bg-gray-100 rounded-full p-1">
+            <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+          <span className="text-xs text-gray-500 mt-1">Help</span>
+        </div>
+      </BottomNavigation>
+    </div>
+  )
+}
+

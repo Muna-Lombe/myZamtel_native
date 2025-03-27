@@ -1,0 +1,101 @@
+"use client"
+
+import { useState } from "react"
+import HomeScreen from "@/app/screens/home-screen"
+import DashboardScreen from "@/app/screens/dashboard-screen"
+import MakePaymentScreen from "@/app/screens/make-payment-screen"
+import SendMoneyScreen from "@/app/screens/send-money-screen"
+import CashOutScreen from "@/app/screens/cash-out-screen"
+import TransactionHistoryScreen from "@/app/screens/transaction-history-screen"
+import InternationalMoneyTransferScreen from "@/app/screens/international-money-transfer-screen"
+import ServiceOptionsModal from "@/app/screens/service-options-modal"
+import PinEntryScreen from "@/app/screens/pin-entry-screen"
+import ProfileScreen from "@/app/screens/profile-screen"
+import EditProfileScreen from "@/app/screens/edit-profile-screen"
+import TransferOptionsScreen from "@/app/screens/transfer-options-screen"
+import BankTransferScreen from "@/app/screens/bank-transfer-screen"
+import OtherNetworksScreen from "@/app/screens/other-networks-screen"
+import SupportScreen from "@/app/screens/support-screen"
+import ServicesScreen from "@/app/screens/services-screen"
+import ShopScreen from "@/app/screens/shop-screen"
+import OffersScreen from "@/app/screens/offers-screen"
+import HelpScreen from "@/app/screens/help-screen"
+import ProductDetailScreen from "@/app/screens/product-detail-screen"
+import CartScreen from "@/app/screens/cart-screen"
+import CreateCustomNumberScreen from "@/app/screens/create-custom-number-screen"
+import SecuritySettingsScreen from "@/app/screens/security-settings-screen"
+import NotificationsScreen from "@/app/screens/notifications-screen"
+import PrivacyPolicyScreen from "@/app/screens/privacy-policy-screen"
+import ServiceShowScreen from "@/app/screens/service-show-screen"
+import OfferShowScreen from "@/app/screens/offer-show-screen"
+import ChangeLocation from "@/components/ui/change-location"
+import NotificationsModal from "@/components/ui/notifications-modal"
+
+export default function MobileApp() {
+  const [currentScreen, setCurrentScreen] = useState("home")
+  const [showLocationModal, setShowLocationModal] = useState(false)
+  const [showNotificationsModal, setShowNotificationsModal] = useState(false)
+  const [currentLocation, setCurrentLocation] = useState("Lusaka")
+
+  const handleNavigate = (screen: string) => {
+    setCurrentScreen(screen)
+  }
+
+  const handleLocationSelect = (location: string) => {
+    setCurrentLocation(location)
+  }
+
+  return (
+    <div className="max-w-md mx-auto bg-white shadow-lg h-[800px] overflow-hidden relative">
+      {/* Current Screen */}
+      <div className="h-full">
+        {currentScreen === "home" && <HomeScreen onNavigate={handleNavigate} />}
+        {currentScreen === "dashboard" && <DashboardScreen onNavigate={handleNavigate} />}
+        {currentScreen === "make-payment" && <MakePaymentScreen onNavigate={handleNavigate} />}
+        {currentScreen === "send-money" && <SendMoneyScreen onNavigate={handleNavigate} />}
+        {currentScreen === "cash-out" && <CashOutScreen onNavigate={handleNavigate} />}
+        {currentScreen === "transaction-history" && <TransactionHistoryScreen onNavigate={handleNavigate} />}
+        {currentScreen === "international-money-transfer" && (
+          <InternationalMoneyTransferScreen onNavigate={handleNavigate} />
+        )}
+        {currentScreen === "service-options" && <ServiceOptionsModal onNavigate={handleNavigate} />}
+        {currentScreen === "pin-entry" && <PinEntryScreen onNavigate={handleNavigate} />}
+        {currentScreen === "profile" && <ProfileScreen onNavigate={handleNavigate} />}
+        {currentScreen === "edit-profile" && <EditProfileScreen onNavigate={handleNavigate} />}
+        {currentScreen === "transfer-options" && <TransferOptionsScreen onNavigate={handleNavigate} />}
+        {currentScreen === "bank-transfer" && <BankTransferScreen onNavigate={handleNavigate} />}
+        {currentScreen === "other-networks" && <OtherNetworksScreen onNavigate={handleNavigate} />}
+        {currentScreen === "support" && <SupportScreen onNavigate={handleNavigate} />}
+        {currentScreen === "services" && <ServicesScreen onNavigate={handleNavigate} />}
+        {currentScreen === "shop" && <ShopScreen onNavigate={handleNavigate} />}
+        {currentScreen === "offers" && <OffersScreen onNavigate={handleNavigate} />}
+        {currentScreen === "help" && <HelpScreen onNavigate={handleNavigate} />}
+        {currentScreen === "product-detail" && <ProductDetailScreen onNavigate={handleNavigate} />}
+        {currentScreen === "cart" && <CartScreen onNavigate={handleNavigate} />}
+        {currentScreen === "create-custom-number" && <CreateCustomNumberScreen onNavigate={handleNavigate} />}
+        {currentScreen === "security-settings" && <SecuritySettingsScreen onNavigate={handleNavigate} />}
+        {currentScreen === "notifications" && <NotificationsScreen onNavigate={handleNavigate} />}
+        {currentScreen === "privacy-policy" && <PrivacyPolicyScreen onNavigate={handleNavigate} />}
+        {currentScreen === "service-show" && <ServiceShowScreen onNavigate={handleNavigate} />}
+        {currentScreen === "offer-show" && <OfferShowScreen onNavigate={handleNavigate} />}
+      </div>
+
+      {/* Modals */}
+      <ChangeLocation
+        isOpen={showLocationModal}
+        onClose={() => setShowLocationModal(false)}
+        onLocationSelect={handleLocationSelect}
+      />
+
+      <NotificationsModal
+        isOpen={showNotificationsModal}
+        onClose={() => setShowNotificationsModal(false)}
+        onViewAll={() => {
+          setShowNotificationsModal(false)
+          handleNavigate("notifications")
+        }}
+      />
+    </div>
+  )
+}
+
